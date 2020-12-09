@@ -1,0 +1,134 @@
+
+// AnalogTouch
+#include <AnalogTouch.h>
+
+// Choose your analog and led pin
+#define pinAnalog1 A0
+#define pinAnalog2 A1
+#define pinAnalog3 A2
+#define pinAnalog4 A3
+#define pinAnalog5 A4
+#define pinAnalog6 A5
+
+
+
+
+// Slow down the automatic calibration cooldown
+#define offset 2
+#if offset > 6
+#error "Too big offset value"
+#endif
+
+String space;
+void setup()
+{
+  // Led setup
+pinMode(13,OUTPUT);
+pinMode(12,OUTPUT);
+pinMode(11,OUTPUT);
+
+  // Start Serial for debugging
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  // No second parameter will use 1 sample
+  uint16_t value1 = analogTouchRead(pinAnalog1);
+  uint16_t value2 = analogTouchRead(pinAnalog2);
+  uint16_t value3 = analogTouchRead(pinAnalog3);
+  uint16_t value4 = analogTouchRead(pinAnalog4);
+  uint16_t value5 = analogTouchRead(pinAnalog5);
+  uint16_t value6 = analogTouchRead(pinAnalog6);
+  //value = analogTouchRead(pinAnalog, 100);
+
+  // Self calibrate
+  static uint16_t ref = 0xFFFF;
+  if (value1 < (ref >> offset))
+    ref = (value1 << offset);
+  // Cool down
+  else if (value1 > (ref >> offset))
+    ref++;
+    
+  else if (value2 < (ref >> offset))
+    ref = (value2 << offset);
+  // Cool down
+  else if (value2 > (ref >> offset))
+    ref++;
+
+  else if (value3 < (ref >> offset))
+    ref = (value3 << offset);
+  // Cool down
+  else if (value3 > (ref >> offset))
+    ref++;
+
+  else if (value4 < (ref >> offset))
+    ref = (value4 << offset);
+  // Cool down
+  else if (value4 > (ref >> offset))
+    ref++;
+
+   else if (value5 < (ref >> offset))
+    ref = (value5 << offset);
+  // Cool down
+  else if (value5 > (ref >> offset))
+    ref++;
+
+    else if (value6 < (ref >> offset))
+    ref = (value6 << offset);
+  // Cool down
+  else if (value6 > (ref >> offset))
+    ref++;
+
+//  bool touched1 = (value1 - (ref >> offset));
+//    bool touched2 = (value2 - (ref >> offset));
+//      bool touched3 = (value3 - (ref >> offset)) ;
+//        bool touched4 = (value4 - (ref >> offset)) ;
+//          bool touched5 = (value5 - (ref >> offset)) ;
+//            bool touched6 = (value6 - (ref >> offset));
+
+  Serial.println("\t");
+
+//   Print calibrated value
+ Serial.print(value1 - (ref >> offset));
+ Serial.print("\t");
+  Serial.print(value2 - (ref >> offset));
+ Serial.print("\t");
+  Serial.print(value3 - (ref >> offset));
+ Serial.print("\t");
+   Serial.print(value4 - (ref >> offset));
+ Serial.print("\t");
+  Serial.print(value5 - (ref >> offset));
+ Serial.print("\t");
+  Serial.print(value6 - (ref >> offset));
+ Serial.print("\t");
+
+ if(value1 - (ref >> offset)>200)
+ {
+  digitalWrite(13,HIGH);
+ }
+ else
+ {
+  digitalWrite(13,LOW);
+ }
+ if(value2 - (ref >> offset)>200)
+ {
+  digitalWrite(12,HIGH);
+ }
+ else
+ {
+  digitalWrite(12,LOW);
+ }
+ if(value3 - (ref >> offset)>200)
+ {
+  digitalWrite(11,HIGH);
+ }
+ else
+ {
+  digitalWrite(11,LOW);
+ }
+ 
+
+  // Wait some time
+  delay(100);
+}
